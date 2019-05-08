@@ -1,0 +1,25 @@
+hor: Sathis Kumar<sathis62@gmail.com>
+about: Commit with days mentioned. It will take care of pushing on those days
+args:
+  - check:
+      short: ck
+      long: check
+      help: Check commits pending to be pushed so far.
+  - commit:
+      short: c
+      long: commit
+      help: Commits the code change
+      subcommands:
+        - commit_commands:
+            about: Commit Day
+            args:
+              - day:
+                  short: d
+                  help: commit day
+              - message:
+                  short: m
+                  help: commit message
+  - list:
+      short: l
+      long: list
+      help: list all commits not committed

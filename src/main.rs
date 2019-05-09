@@ -19,7 +19,10 @@ fn main() {
 
     let mut revwalk = repo.revwalk().unwrap();
     revwalk.set_sorting(git2::Sort::TIME);
-    revwalk.push_head();
+    revwalk.push_ref("FETCH_HEAD");
+
+    let mut rp = repo.find_remote("origin").unwrap();
+    rp.push();
 
     println!("Printing commits now");
 

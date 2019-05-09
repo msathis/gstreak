@@ -1,6 +1,6 @@
 use clap::{App, Arg, SubCommand};
 use clap::load_yaml;
-use git2::{Commit, Repository};
+use git2::{BranchType, Commit, Repository};
 
 pub mod data;
 pub mod commit;
@@ -17,12 +17,14 @@ fn main() {
         Err(e) => panic!("failed to open: {}", e),
     };
 
+    let rev = repo.revparse("HEAD").unwrap();
+    println!("{:?}", rev..unwrap());
+
     let mut revwalk = repo.revwalk().unwrap();
     revwalk.set_sorting(git2::Sort::TIME);
-    revwalk.push_ref("FETCH_HEAD");
+    revwalk.push_ref("refs/remotes/origin/master");
 
     let mut rp = repo.find_remote("origin").unwrap();
-    rp.push();
 
     println!("Printing commits now");
 

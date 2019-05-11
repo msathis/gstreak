@@ -30,9 +30,8 @@ fn main() {
     revwalk.set_sorting(git2::Sort::TIME);
     revwalk.push_ref(format!("refs/remotes/origin/{}", active_branch).as_str());
 
-    println!("Printing commits now");
-
-    commit::commit("One more test commit".to_owned(), "".to_owned(), &mut config, &repo);
+    commit::push(active_branch, &mut config, &repo);
+    commit::commit("test commit for push".to_owned(), "".to_owned(), &mut config, &repo);
 
 
     for commit in revwalk {

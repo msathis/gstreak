@@ -1,8 +1,8 @@
-use std::fs::File;
-use std::io::{BufWriter, Read, Write};
+use std::fs::{File, OpenOptions};
+use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
 use std::path::Path;
 
-use bincode::{deserialize, serialize_into};
+use bincode::{deserialize, deserialize_from, serialize_into};
 
 use crate::data::{CommitLog, Data};
 
@@ -14,20 +14,29 @@ pub struct ConfigFile {
 impl ConfigFile {
     pub fn new(file: String) -> Self {
         let path = Path::new(&file);
-        let mut file = match File::open(path) {
+        let open_file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(path);
+
+        let mut file = match open_file {
             Ok(f) => f,
-            Err(_) => File::create(path).expect("Config file not creatable"),
+            Err(_) => {
+                File::create(path).expect("Config file not creatable")
+            }
         };
 
-        file.sync_data().unwrap();
+        let reader = BufReader::new(&file);
 
-        let mut buf = vec![];
-        file.read(&mut buf).unwrap();
-
-        let data: Data = match buf.len() {
-            0 => Data::new(),
-            _ => deserialize(&buf).unwrap(),
+        let data = match deserialize_from(reader) {
+            Err(e) => {
+                Data::new()
+            }
+            Ok(e) => e
         };
+
+        println!("Data is {:?}", &data);
 
         ConfigFile { file, data }
     }
@@ -35,7 +44,7 @@ impl ConfigFile {
     pub fn save(&mut self) {
         let mut f = BufWriter::new(&self.file);
         serialize_into(&mut f, &self.data).unwrap();
-        self.file.sync_data().unwrap();
+        f.flush().unwrap();
     }
 
     pub fn add_log(&mut self, log: CommitLog) {

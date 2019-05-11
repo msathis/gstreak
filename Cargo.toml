@@ -10,3 +10,5 @@ clap = {version = "2.33", features = ["yaml"]}
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1.0.91", features = ["derive"] }
 rte = "0.2.1"
+serde_json = "1.0"
+bincode = "1.1.3"

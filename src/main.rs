@@ -1,9 +1,13 @@
 use clap::{App, Arg, SubCommand};
 use clap::load_yaml;
-use git2::{BranchType, Commit, Repository};
+use git2::{Repository, Signature};
 
-pub mod data;
+use crate::config::ConfigFile;
+use crate::data::CommitLog;
+
 pub mod commit;
+pub mod config;
+pub mod data;
 
 fn main() {
     let yaml = load_yaml!("cli.yml");
@@ -17,16 +21,19 @@ fn main() {
         Err(e) => panic!("failed to open: {}", e),
     };
 
-    let rev = repo.revparse("HEAD").unwrap();
-    println!("{:?}", rev..unwrap());
+    let mut config = ConfigFile::new(path + "/streak.json");
+
+    let rev = repo.head().unwrap();
+    let active_branch = rev.shorthand().unwrap();
 
     let mut revwalk = repo.revwalk().unwrap();
     revwalk.set_sorting(git2::Sort::TIME);
-    revwalk.push_ref("refs/remotes/origin/master");
-
-    let mut rp = repo.find_remote("origin").unwrap();
+    revwalk.push_ref(format!("refs/remotes/origin/{}", active_branch).as_str());
 
     println!("Printing commits now");
+
+
+    commit::commit("Add test".to_owned(), "".to_owned(), &mut config, &repo);
 
     for commit in revwalk {
         let id = commit.unwrap();

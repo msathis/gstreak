@@ -32,7 +32,6 @@ fn main() {
 
     println!("Printing commits now");
 
-
     commit::commit("Add test".to_owned(), "".to_owned(), &mut config, &repo);
 
     for commit in revwalk {

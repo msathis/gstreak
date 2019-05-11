@@ -8,10 +8,17 @@ pub fn commit(message: String, date: String, config: &mut ConfigFile, repo: &Rep
     let sig = repo.signature().unwrap();
     let mut index = repo.index().unwrap();
 
-    let head = index.write_tree().unwrap();
-    let last_commit = repo.find_commit(head).unwrap();
-    let tree = repo.find_tree(head).unwrap();
+    println!("{}", &sig.email().unwrap());
 
-    let commit_id = repo.commit(None, &sig, &sig, &message, &tree, &[&last_commit]).unwrap();
+    //let head = repo.head().unwrap().peel_to_commit().unwrap();
+    let tree_id = repo.index().unwrap().write_tree().unwrap();
+    let tree = repo.find_tree(tree_id).unwrap();
+
+    let parent_id = repo.head().ok().and_then(|h| h.target()).unwrap();
+    let parent = repo.find_commit(parent_id).unwrap();
+
+    let commit_id = repo.commit(Some("HEAD"), &sig,
+                                &sig, &message, &tree, &[&parent]).unwrap();
+
     config.add_log(CommitLog::new(commit_id.to_string()));
 }

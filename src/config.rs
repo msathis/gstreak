@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufWriter, Read};
+use std::io::{BufWriter, Read, Write};
 use std::path::Path;
 
 use bincode::{deserialize, serialize_into};
@@ -35,6 +35,7 @@ impl ConfigFile {
     pub fn save(&mut self) {
         let mut f = BufWriter::new(&self.file);
         serialize_into(&mut f, &self.data).unwrap();
+        self.file.sync_data().unwrap();
     }
 
     pub fn add_log(&mut self, log: CommitLog) {

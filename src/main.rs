@@ -32,7 +32,8 @@ fn main() {
 
     println!("Printing commits now");
 
-    commit::commit("Add test".to_owned(), "".to_owned(), &mut config, &repo);
+    commit::commit("One more test commit".to_owned(), "".to_owned(), &mut config, &repo);
+
 
     for commit in revwalk {
         let id = commit.unwrap();

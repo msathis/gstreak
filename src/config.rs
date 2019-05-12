@@ -1,8 +1,8 @@
 use std::fs::{File, OpenOptions};
-use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
+use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 
-use bincode::{deserialize, deserialize_from, serialize_into};
+use bincode::{deserialize_from, serialize_into};
 
 use crate::data::{CommitLog, Data};
 
@@ -30,7 +30,7 @@ impl ConfigFile {
         let reader = BufReader::new(&file);
 
         let data = match deserialize_from(reader) {
-            Err(e) => {
+            Err(_) => {
                 Data::new()
             }
             Ok(e) => e

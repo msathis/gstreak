@@ -2,6 +2,7 @@ use clap::{App, Arg, SubCommand};
 use clap::load_yaml;
 use git2::{Repository, Signature};
 
+use crate::commit::Committer;
 use crate::config::ConfigFile;
 use crate::data::CommitLog;
 
@@ -22,16 +23,16 @@ fn main() {
     };
 
     let mut config = ConfigFile::new(path + "/streak.json");
-
     let rev = repo.head().unwrap();
     let active_branch = rev.shorthand().unwrap();
+    let mut committer = Committer::new(&mut config, &repo);
 
     let mut revwalk = repo.revwalk().unwrap();
     revwalk.set_sorting(git2::Sort::TIME);
     revwalk.push_ref(format!("refs/remotes/origin/{}", active_branch).as_str());
 
-    commit::push(active_branch, &mut config, &repo);
-    commit::commit("test commit for push".to_owned(), "".to_owned(), &mut config, &repo);
+    committer.push(active_branch);
+    //committercommit("test commit for push".to_owned(), "".to_owned());
 
 
     for commit in revwalk {

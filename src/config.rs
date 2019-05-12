@@ -51,4 +51,8 @@ impl ConfigFile {
         self.data.add(log);
         self.save();
     }
+
+    pub fn print_logs(&self) {
+        self.data.print();
+    }
 }

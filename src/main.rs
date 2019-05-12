@@ -31,13 +31,15 @@ fn main() {
     revwalk.set_sorting(git2::Sort::TIME);
     revwalk.push_ref(format!("refs/remotes/origin/{}", active_branch).as_str());
 
-    committer.push(active_branch);
-    //committercommit("test commit for push".to_owned(), "".to_owned());
+    committer.print_logs();
+
+    //committer.push(active_branch);
+    //committer.commit("test commit for push".to_owned(), "".to_owned());
 
 
-    for commit in revwalk {
-        let id = commit.unwrap();
-        let commit = repo.find_commit(id).unwrap();
-        println!("Commit {:?} : {:?}", id, commit);
-    }
+//    for commit in revwalk {
+//        let id = commit.unwrap();
+//        let commit = repo.find_commit(id).unwrap();
+//        println!("Commit {:?} : {:?}", id, commit);
+//    }
 }

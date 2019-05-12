@@ -23,6 +23,8 @@ impl<'a> Committer<'a> {
 
     pub fn commit(&mut self, message: String, date: String) {
         let sig = self.repo.signature().unwrap();
+        let head = self.repo.head().unwrap();
+        let active_branch = head.shorthand().unwrap();
 
         let tree_id = self.repo.index().unwrap().write_tree().unwrap();
         let tree = self.repo.find_tree(tree_id).unwrap();
@@ -32,8 +34,7 @@ impl<'a> Committer<'a> {
 
         let commit_id = self.repo.commit(Some("HEAD"), &sig,
                                          &sig, &message, &tree, &[&parent]).unwrap();
-
-        self.config.add_log(CommitLog::new(commit_id.to_string()));
+        self.config.add_log(CommitLog::new(commit_id.to_string(), active_branch.to_string()));
     }
 
     pub fn push(&mut self, branch: &str) {
@@ -45,6 +46,10 @@ impl<'a> Committer<'a> {
             Err(e) => println!("Push to remote failed {}", e),
             Ok(_) => println!("Push successful")
         }
+    }
+
+    pub fn print_logs(&self) {
+        self.config.print_logs();
     }
 
     pub fn get_push_options() -> PushOptions<'a> {

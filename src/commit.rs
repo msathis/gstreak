@@ -38,7 +38,7 @@ impl<'a> Committer<'a> {
 
     pub fn push(&mut self, branch: &str) {
         let mut remote = self.repo.find_remote("origin").unwrap();
-        let origin = format!("refs/remotes/origin/{}", branch);
+        let origin = format!("refs/heads/{}", branch);
 
 
         match remote.push(&[&origin], Some(&mut self.options)) {

@@ -20,7 +20,7 @@ impl ConfigFile {
             .create(true)
             .open(path);
 
-        let mut file = match open_file {
+        let file = match open_file {
             Ok(f) => f,
             Err(_) => {
                 File::create(path).expect("Config file not creatable")

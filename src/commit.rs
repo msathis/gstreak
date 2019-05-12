@@ -1,5 +1,3 @@
-use std::env;
-
 use git2::{PushOptions, Repository};
 use git2_credentials::CredentialHandler;
 

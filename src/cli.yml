@@ -1,25 +1,28 @@
-hor: Sathis Kumar<sathis62@gmail.com>
+name: gstreak
+version: "0.1"
+author: Sathis Kumar<sathis62@gmail.com>
 about: Commit with days mentioned. It will take care of pushing on those days
-args:
-  - check:
-      short: ck
-      long: check
-      help: Check commits pending to be pushed so far.
+settings:
+  - ArgRequiredElseHelp
+  - ColorAlways
+subcommands:
   - commit:
-      short: c
-      long: commit
-      help: Commits the code change
-      subcommands:
-        - commit_commands:
-            about: Commit Day
-            args:
-              - day:
-                  short: d
-                  help: commit day
-              - message:
-                  short: m
-                  help: commit message
+      version: "0.1"
+      about: Commits the code change
+      args:
+        - message:
+            short: m
+            help: message for the commit
+            takes_value: true
+
+        - time:
+            short: t
+            help: time at which commit should be pushed
+            takes_value: true
   - list:
-      short: l
-      long: list
-      help: list all commits not committed
+      version: "0.1"
+      about: list all commits not committed
+
+  - push:
+      about: Push commits meant to be pushed till now
+

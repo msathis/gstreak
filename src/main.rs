@@ -1,10 +1,9 @@
-use clap::{App, Arg, SubCommand};
+use clap::App;
 use clap::load_yaml;
-use git2::{Repository, Signature};
+use git2::Repository;
 
 use crate::commit::Committer;
 use crate::config::ConfigFile;
-use crate::data::CommitLog;
 
 pub mod commit;
 pub mod config;
@@ -13,8 +12,8 @@ pub mod data;
 fn main() {
     let yaml = load_yaml!("cli.yml");
 
-    let matches = App::from_yaml(yaml).get_matches();
-    println!("Matches {:?}", &matches.is_present("commit"));
+    let matches = App::from_yaml(yaml)
+        .get_matches();
 
     let path = std::env::current_dir().unwrap().display().to_string();
     let repo = match Repository::open(&path) {
@@ -27,14 +26,22 @@ fn main() {
     let active_branch = rev.shorthand().unwrap();
     let mut committer = Committer::new(&mut config, &repo);
 
-    let mut revwalk = repo.revwalk().unwrap();
-    revwalk.set_sorting(git2::Sort::TIME);
-    revwalk.push_ref(format!("refs/remotes/origin/{}", active_branch).as_str());
+    if matches.is_present("commit") {
+        committer.commit(matches.value_of("message").unwrap().to_string(),
+                         matches.value_of("date").unwrap().to_string());
+    } else if matches.is_present("list") {
+        committer.print_logs();
+    } else if matches.is_present("push") {
+        committer.push(active_branch);
+    }
 
-    committer.print_logs();
+    //let mut revwalk = repo.revwalk().unwrap();
+    //revwalk.set_sorting(git2::Sort::TIME);
+    //revwalk.push_ref(format!("refs/remotes/origin/{}", active_branch).as_str());
+
 
     //committer.push(active_branch);
-    //committer.commit("test commit for push".to_owned(), "".to_owned());
+    //committer.commit("Add method to list unpushed logs".to_owned(), "".to_owned());
 
 
 //    for commit in revwalk {

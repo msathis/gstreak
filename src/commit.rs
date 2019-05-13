@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use chrono_english::{DateError, Dialect, parse_date_string};
-use git2::{PushOptions, Repository};
+use git2::{ObjectType, PushOptions, Repository};
 use git2_credentials::CredentialHandler;
 
 use crate::config::ConfigFile;
@@ -33,8 +33,13 @@ impl<'a> Committer<'a> {
         let parent_id = self.repo.head().ok().and_then(|h| h.target()).unwrap();
         let parent = self.repo.find_commit(parent_id).unwrap();
 
+        //Commit and tag the commit
         let commit_id = self.repo.commit(Some("HEAD"), &sig,
                                          &sig, &message, &tree, &[&parent]).unwrap();
+        let object = self.repo.find_object(commit_id, Some(ObjectType::Commit)).unwrap();
+        let tag_message = format!("Tag for {}", commit_id.to_string());
+
+        self.repo.tag(commit_id.to_string().as_str(), &object, &sig, &tag_message, true);
         self.config.add_log(CommitLog::new(commit_id.to_string(), active_branch.to_string(), date_time));
     }
 

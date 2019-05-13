@@ -29,12 +29,24 @@ impl Data {
             println!("{}\t{}", log.commit, log.time);
         }
     }
+
+    pub fn get_commit(&self, time: DateTime<Utc>) -> Option<&CommitLog> {
+        let mut last_log = None;
+        for log in &self.data {
+            if log.time.le(time) {
+                last_log = Some(log);
+            } else {
+                break;
+            }
+        }
+        last_log
+    }
 }
 
 impl CommitLog {
-    pub fn new(commit: String, branch: String) -> Self {
+    pub fn new(commit: String, branch: String, time: DateTime<Utc>) -> Self {
         CommitLog {
-            time: Utc::now(),
+            time,
             commit,
             branch,
         }

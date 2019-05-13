@@ -28,7 +28,7 @@ fn main() {
 
     if matches.is_present("commit") {
         committer.commit(matches.value_of("message").unwrap().to_string(),
-                         matches.value_of("date").unwrap().to_string());
+                         matches.value_of("date"));
     } else if matches.is_present("list") {
         committer.print_logs();
     } else if matches.is_present("push") {

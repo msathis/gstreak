@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/git-streak.iml" filepath="$PROJECT_DIR$/git-streak.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gstreak.iml" filepath="$PROJECT_DIR$/gstreak.iml" />
     </modules>
   </component>
 </project>

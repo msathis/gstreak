@@ -3,6 +3,7 @@ use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 
 use bincode::{deserialize_from, serialize_into};
+use chrono::{DateTime, Utc};
 
 use crate::data::{CommitLog, Data};
 
@@ -54,5 +55,9 @@ impl ConfigFile {
 
     pub fn print_logs(&self) {
         self.data.print();
+    }
+
+    pub fn get_commit(&self, time: DateTime<Utc>) -> Option<&CommitLog> {
+        self.data.get_commit(time)
     }
 }

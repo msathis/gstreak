@@ -1,3 +1,5 @@
+use std::process::Command;
+
 use chrono::{DateTime, Utc};
 use chrono_english::{DateError, Dialect, parse_date_string};
 use git2::{ObjectType, PushOptions, Repository};
@@ -36,10 +38,6 @@ impl<'a> Committer<'a> {
         //Commit and tag the commit
         let commit_id = self.repo.commit(Some("HEAD"), &sig,
                                          &sig, &message, &tree, &[&parent]).unwrap();
-        let object = self.repo.find_object(commit_id, Some(ObjectType::Commit)).unwrap();
-        let tag_message = format!("Tag for {}", commit_id.to_string());
-
-        self.repo.tag(commit_id.to_string().as_str(), &object, &sig, &tag_message, true);
         self.config.add_log(CommitLog::new(commit_id.to_string(), active_branch.to_string(), date_time));
     }
 
@@ -50,9 +48,18 @@ impl<'a> Committer<'a> {
         let mut remote = self.repo.find_remote("origin").unwrap();
         let origin = format!("refs/heads/{}", branch);
 
-        match remote.push(&[&origin], Some(&mut self.options)) {
-            Err(e) => println!("Push to remote failed {}", e),
-            Ok(_) => println!("Push successful")
+        if commit.is_some() {
+            Command::new("git")
+                .arg("push")
+                .arg("origin")
+                .arg(format!("{}:{}", commit.unwrap().get_commit(), branch))
+                .spawn()
+                .expect("Push failed");
+        } else {
+            match remote.push(&[&origin], Some(&mut self.options)) {
+                Err(e) => println!("Push to remote failed {}", e),
+                Ok(_) => println!("Push successful")
+            }
         }
     }
 
@@ -72,6 +79,7 @@ impl<'a> Committer<'a> {
     }
 
     fn get_datetime(&self, expr: Option<&str>) -> Result<DateTime<Utc>, DateError> {
+        println!("Getting date time {}", expr.unwrap());
         match expr {
             Some(str) => parse_date_string(str, Utc::now(), Dialect::Uk),
             None => Ok(Utc::now())

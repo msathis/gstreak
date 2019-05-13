@@ -51,4 +51,8 @@ impl CommitLog {
             branch,
         }
     }
+
+    pub fn get_commit(&self) -> &String {
+        &self.commit
+    }
 }

@@ -27,8 +27,9 @@ fn main() {
     let mut committer = Committer::new(&mut config, &repo);
 
     if matches.is_present("commit") {
+        let matches = matches.subcommand_matches("commit").unwrap();
         committer.commit(matches.value_of("message").unwrap().to_string(),
-                         matches.value_of("date"));
+                         matches.value_of("time"));
     } else if matches.is_present("list") {
         committer.print_logs();
     } else if matches.is_present("push") {

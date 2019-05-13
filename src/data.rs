@@ -33,7 +33,7 @@ impl Data {
     pub fn get_commit(&self, time: DateTime<Utc>) -> Option<&CommitLog> {
         let mut last_log = None;
         for log in &self.data {
-            if log.time.le(time) {
+            if log.time.le(&time) {
                 last_log = Some(log);
             } else {
                 break;

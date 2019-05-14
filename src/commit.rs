@@ -51,12 +51,12 @@ impl<'a> Committer<'a> {
 
         if commit_id.is_some() {
             let commit_id = commit_id.unwrap();
-            Command::new("git")
+            let exit_code = Command::new("git")
                 .arg("push")
                 .arg("origin")
                 .arg(format!("{}:{}", &commit_id, branch))
                 .spawn()
-                .expect("Push failed");
+                .expect("Push failed").wait().unwrap();
             self.config.clear_logs(commit_id.as_str());
         } else if !self.config.has_logs() {
             match remote.push(&[&origin], Some(&mut self.options)) {

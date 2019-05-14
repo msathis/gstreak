@@ -3,22 +3,26 @@ A command line utility to push commits in a scheduled way.
 
 ## Commands
 
-`gstreak push`
+1. `gstreak push`
    
    Pushes the latest changes which are scheduled to be pushed till now. 
-This includes the commits not committes using gstreak too.
+This includes the commits not committed using gstreak too.
 
+2.  `gstreak list`
 
-`gstreak list`
-
-   Lists all commits committed by gstreak but not pushed till now.
+    Lists all commits committed by gstreak but not pushed till now.
    
-`gstreak commit -m <message> -d "<date-exp>"`
+3. `gstreak commit -m <message> -t "<date expr in natural language>"`
 
    For ex.
    
-   `gstreak commit -m "Fix Readme" -d "now+2h"`
+   `gstreak commit -m "Fix Readme" -t "2 hours"`
    
+   This commits a message which can be pushed later.
+   
+4. `gstreak check`
+    
+   Prints the next commit to be pushed
    
 ## Scheduling
  

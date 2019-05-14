@@ -34,19 +34,4 @@ fn main() {
     } else if matches.is_present("push") {
         committer.push(active_branch);
     }
-
-    //let mut revwalk = repo.revwalk().unwrap();
-    //revwalk.set_sorting(git2::Sort::TIME);
-    //revwalk.push_ref(format!("refs/remotes/origin/{}", active_branch).as_str());
-
-
-    //committer.push(active_branch);
-    //committer.commit("Add method to list unpushed logs".to_owned(), "".to_owned());
-
-
-//    for commit in revwalk {
-//        let id = commit.unwrap();
-//        let commit = repo.find_commit(id).unwrap();
-//        println!("Commit {:?} : {:?}", id, commit);
-//    }
 }

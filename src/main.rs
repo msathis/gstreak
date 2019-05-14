@@ -32,6 +32,8 @@ fn main() {
                          matches.value_of("time"));
     } else if matches.is_present("list") {
         committer.print_logs();
+    } else if matches.is_present("check") {
+        committer.print_next_commit();
     } else if matches.is_present("push") {
         committer.push(active_branch);
     }

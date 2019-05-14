@@ -22,7 +22,11 @@ subcommands:
             required: true
   - list:
       version: "0.1"
-      about: list all commits not committed
+      about: list all commits not pushed
+
+  - check:
+      version: "0.1"
+      about: Check the commit next to be pushed
 
   - push:
       about: Push commits meant to be pushed till now

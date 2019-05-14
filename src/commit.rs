@@ -55,16 +55,27 @@ impl<'a> Committer<'a> {
                 .arg(format!("{}:{}", commit.unwrap().get_commit(), branch))
                 .spawn()
                 .expect("Push failed");
-        } else {
+            self.clear_logs(commit);
+        } else if !self.config.has_logs() {
             match remote.push(&[&origin], Some(&mut self.options)) {
                 Err(e) => println!("Push to remote failed {}", e),
                 Ok(_) => println!("Push successful")
             }
+        } else {
+            println!("Nothing to push");
         }
+    }
+
+    pub fn clear_logs(&mut self, commit: Option<&CommitLog>) {
+        self.config.clear_logs(commit.unwrap().get_commit());
     }
 
     pub fn print_logs(&self) {
         self.config.print_logs();
+    }
+
+    pub fn print_next_commit(&self) {
+        self.config.print_next_commit();
     }
 
     fn get_push_options() -> PushOptions<'a> {

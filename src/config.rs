@@ -57,7 +57,24 @@ impl ConfigFile {
         self.data.print();
     }
 
+    pub fn print_next_commit(&self) {
+        let commit = self.data.get_commit(Utc::now());
+
+        match commit {
+            Some(c) => println!("{} {}", c.get_commit(), c.get_time()),
+            None => println!("There is nothing to be pushed.")
+        }
+    }
+
     pub fn get_commit(&self, time: DateTime<Utc>) -> Option<&CommitLog> {
         self.data.get_commit(time)
+    }
+
+    pub fn has_logs(&self) -> bool {
+        self.data.has_logs()
+    }
+
+    pub fn clear_logs(&mut self, commit: &str) {
+        self.data.clear_logs(commit);
     }
 }

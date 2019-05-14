@@ -41,6 +41,21 @@ impl Data {
         }
         last_log
     }
+
+    pub fn has_logs(&self) -> bool {
+        self.data.len() > 0
+    }
+
+    pub fn clear_logs(&mut self, commit: &str) {
+        let mut i = 0;
+        for log in &self.data {
+            i += 1;
+            if log.commit == commit {
+                break;
+            }
+        }
+        self.data.drain(0..i);
+    }
 }
 
 impl CommitLog {
@@ -54,5 +69,9 @@ impl CommitLog {
 
     pub fn get_commit(&self) -> &String {
         &self.commit
+    }
+
+    pub fn get_time(&self) -> &DateTime<Utc> {
+        &self.time
     }
 }

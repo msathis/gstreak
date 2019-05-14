@@ -2,7 +2,7 @@ use std::process::Command;
 
 use chrono::{DateTime, Utc};
 use chrono_english::{DateError, Dialect, parse_date_string};
-use git2::{ObjectType, PushOptions, Repository};
+use git2::{PushOptions, Repository};
 use git2_credentials::CredentialHandler;
 
 use crate::config::ConfigFile;
@@ -44,20 +44,20 @@ impl<'a> Committer<'a> {
     pub fn push(&mut self, branch: &str) {
 
         //Get commit till which can be pushed
-        let mut commitId = self.config.get_commit(Utc::now());
+        let commit_id = self.config.get_commit(Utc::now());
 
         let mut remote = self.repo.find_remote("origin").unwrap();
         let origin = format!("refs/heads/{}", branch);
 
-        if commitId.is_some() {
-            let commitId = commitId.unwrap();
+        if commit_id.is_some() {
+            let commit_id = commit_id.unwrap();
             Command::new("git")
                 .arg("push")
                 .arg("origin")
-                .arg(format!("{}:{}", &commitId, branch))
+                .arg(format!("{}:{}", &commit_id, branch))
                 .spawn()
                 .expect("Push failed");
-            self.config.clear_logs(commitId.as_str());
+            self.config.clear_logs(commit_id.as_str());
         } else if !self.config.has_logs() {
             match remote.push(&[&origin], Some(&mut self.options)) {
                 Err(e) => println!("Push to remote failed {}", e),
@@ -88,7 +88,6 @@ impl<'a> Committer<'a> {
     }
 
     fn get_datetime(&self, expr: Option<&str>) -> Result<DateTime<Utc>, DateError> {
-        println!("Getting date time {}", expr.unwrap());
         match expr {
             Some(str) => parse_date_string(str, Utc::now(), Dialect::Uk),
             None => Ok(Utc::now())

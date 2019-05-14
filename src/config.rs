@@ -37,8 +37,6 @@ impl ConfigFile {
             Ok(e) => e
         };
 
-        println!("Data is {:?}", &data);
-
         ConfigFile { file, data }
     }
 

@@ -1,5 +1,5 @@
 use std::fs::{File, OpenOptions};
-use std::io::{BufReader, BufWriter, Write};
+use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::path::Path;
 
 use bincode::{deserialize_from, serialize_into};
@@ -42,6 +42,7 @@ impl ConfigFile {
 
     pub fn save(&mut self) {
         let mut f = BufWriter::new(&self.file);
+        f.seek(SeekFrom::Start(0));
         serialize_into(&mut f, &self.data).unwrap();
         f.flush().unwrap();
     }

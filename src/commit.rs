@@ -44,18 +44,20 @@ impl<'a> Committer<'a> {
     pub fn push(&mut self, branch: &str) {
 
         //Get commit till which can be pushed
-        let commit = self.config.get_commit(Utc::now());
+        let mut commitId = self.config.get_commit(Utc::now());
+
         let mut remote = self.repo.find_remote("origin").unwrap();
         let origin = format!("refs/heads/{}", branch);
 
-        if commit.is_some() {
+        if commitId.is_some() {
+            let commitId = commitId.unwrap();
             Command::new("git")
                 .arg("push")
                 .arg("origin")
-                .arg(format!("{}:{}", commit.unwrap().get_commit(), branch))
+                .arg(format!("{}:{}", &commitId, branch))
                 .spawn()
                 .expect("Push failed");
-            self.clear_logs(commit);
+            self.config.clear_logs(commitId.as_str());
         } else if !self.config.has_logs() {
             match remote.push(&[&origin], Some(&mut self.options)) {
                 Err(e) => println!("Push to remote failed {}", e),
@@ -64,10 +66,6 @@ impl<'a> Committer<'a> {
         } else {
             println!("Nothing to push");
         }
-    }
-
-    pub fn clear_logs(&mut self, commit: Option<&CommitLog>) {
-        self.config.clear_logs(commit.unwrap().get_commit());
     }
 
     pub fn print_logs(&self) {

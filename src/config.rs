@@ -61,12 +61,12 @@ impl ConfigFile {
         let commit = self.data.get_commit(Utc::now());
 
         match commit {
-            Some(c) => println!("{} {}", c.get_commit(), c.get_time()),
+            Some(c) => println!("{}", c),
             None => println!("There is nothing to be pushed.")
         }
     }
 
-    pub fn get_commit(&self, time: DateTime<Utc>) -> Option<&CommitLog> {
+    pub fn get_commit(&self, time: DateTime<Utc>) -> Option<String> {
         self.data.get_commit(time)
     }
 

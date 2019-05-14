@@ -57,7 +57,11 @@ impl<'a> Committer<'a> {
                 .arg(format!("{}:{}", &commit_id, branch))
                 .spawn()
                 .expect("Push failed").wait().unwrap();
-            self.config.clear_logs(commit_id.as_str());
+            if exit_code.code().unwrap() == 0 {
+                self.config.clear_logs(commit_id.as_str());
+            } else {
+                println!("Push failed");
+            }
         } else if !self.config.has_logs() {
             match remote.push(&[&origin], Some(&mut self.options)) {
                 Err(e) => println!("Push to remote failed {}", e),

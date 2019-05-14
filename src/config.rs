@@ -74,5 +74,6 @@ impl ConfigFile {
 
     pub fn clear_logs(&mut self, commit: &str) {
         self.data.clear_logs(commit);
+        self.save();
     }
 }

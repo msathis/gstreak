@@ -27,3 +27,11 @@ This includes the commits not committed using gstreak too.
 ## Scheduling
  
 Add a crontab entry to `gstreak push` with repo as working directory.
+
+## Troubleshooting
+
+1. git push asking for password.
+    
+    Run `git config credential.helper store` to enable credentials stored in global store.
+    Then next time you can pull / push without getting password prompt.
+    

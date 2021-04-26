@@ -1,3 +1,4 @@
 /target
 streak.json
 **/*.rs.bk
+.idea

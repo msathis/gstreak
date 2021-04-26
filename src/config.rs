@@ -1,6 +1,7 @@
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::path::Path;
+use anyhow::{Error, Result};
 
 use bincode::{deserialize_from, serialize_into};
 use chrono::{DateTime, Utc};
@@ -40,16 +41,18 @@ impl ConfigFile {
         ConfigFile { file, data }
     }
 
-    pub fn save(&mut self) {
+    pub fn save(&mut self) -> Result<(), Error>{
         let mut f = BufWriter::new(&self.file);
-        f.seek(SeekFrom::Start(0));
+        f.seek(SeekFrom::Start(0))?;
         serialize_into(&mut f, &self.data).unwrap();
         f.flush().unwrap();
+        Ok(())
     }
 
-    pub fn add_log(&mut self, log: CommitLog) {
+    pub fn add_log(&mut self, log: CommitLog) -> Result<(), Error> {
         self.data.add(log);
-        self.save();
+        self.save()?;
+        Ok(())
     }
 
     pub fn print_logs(&self) {
@@ -73,8 +76,9 @@ impl ConfigFile {
         self.data.has_logs()
     }
 
-    pub fn clear_logs(&mut self, commit: &str) {
+    pub fn clear_logs(&mut self, commit: &str) -> Result<(), Error>{
         self.data.clear_logs(commit);
-        self.save();
+        self.save()?;
+        Ok(())
     }
 }

@@ -1,7 +1,8 @@
 use std::process::Command;
 
+use anyhow::{Error, Result};
 use chrono::{DateTime, Utc};
-use chrono_english::{DateError, Dialect, parse_date_string};
+use chrono_english::{parse_date_string, DateError, Dialect};
 use git2::{PushOptions, Repository};
 use git2_credentials::CredentialHandler;
 
@@ -23,11 +24,13 @@ impl<'a> Committer<'a> {
         }
     }
 
-    pub fn commit(&mut self, message: String, date: Option<&str>) {
+    pub fn commit(&mut self, message: String, date: Option<&str>) -> Result<(), Error> {
         let sig = self.repo.signature().unwrap();
         let head = self.repo.head().unwrap();
         let active_branch = head.shorthand().unwrap();
-        let date_time = self.get_datetime(date).expect("Passed date time is not parsable");
+        let date_time = self
+            .get_datetime(date)
+            .expect("Passed date time is not parsable");
 
         let tree_id = self.repo.index().unwrap().write_tree().unwrap();
         let tree = self.repo.find_tree(tree_id).unwrap();
@@ -36,13 +39,19 @@ impl<'a> Committer<'a> {
         let parent = self.repo.find_commit(parent_id).unwrap();
 
         //Commit and tag the commit
-        let commit_id = self.repo.commit(Some("HEAD"), &sig,
-                                         &sig, &message, &tree, &[&parent]).unwrap();
-        self.config.add_log(CommitLog::new(commit_id.to_string(), active_branch.to_string(), date_time));
+        let commit_id = self
+            .repo
+            .commit(Some("HEAD"), &sig, &sig, &message, &tree, &[&parent])
+            .unwrap();
+        self.config.add_log(CommitLog::new(
+            commit_id.to_string(),
+            active_branch.to_string(),
+            date_time,
+        ))?;
+        Ok(())
     }
 
-    pub fn push(&mut self, branch: &str) {
-
+    pub fn push(&mut self, branch: &str) -> Result<(), Error>{
         //Get commit till which can be pushed
         let commit_id = self.config.get_commit(Utc::now());
 
@@ -56,20 +65,21 @@ impl<'a> Committer<'a> {
                 .arg("origin")
                 .arg(format!("{}:{}", &commit_id, branch))
                 .spawn()
-                .expect("Push failed").wait().unwrap();
+                .expect("Push failed")
+                .wait()
+                .unwrap();
             if exit_code.code().unwrap() == 0 {
-                self.config.clear_logs(commit_id.as_str());
+                self.config.clear_logs(commit_id.as_str())?;
             } else {
                 println!("Push failed");
             }
         } else if !self.config.has_logs() {
-            match remote.push(&[&origin], Some(&mut self.options)) {
-                Err(e) => println!("Push to remote failed {}", e),
-                Ok(_) => println!("Push successful")
-            }
+             remote.push(&[&origin], Some(&mut self.options))?;
+             println!("Push is successful");
         } else {
             println!("Nothing to push");
         }
+        Ok(())
     }
 
     pub fn print_logs(&self) {
@@ -85,7 +95,9 @@ impl<'a> Committer<'a> {
         let mut cb = git2::RemoteCallbacks::new();
         let git_config = git2::Config::open_default().unwrap();
         let mut ch = CredentialHandler::new(git_config);
-        cb.credentials(move |url, username, allowed| ch.try_next_credential(url, username, allowed));
+        cb.credentials(move |url, username, allowed| {
+            ch.try_next_credential(url, username, allowed)
+        });
         opts.remote_callbacks(cb);
 
         opts
@@ -94,10 +106,7 @@ impl<'a> Committer<'a> {
     fn get_datetime(&self, expr: Option<&str>) -> Result<DateTime<Utc>, DateError> {
         match expr {
             Some(str) => parse_date_string(str, Utc::now(), Dialect::Uk),
-            None => Ok(Utc::now())
+            None => Ok(Utc::now()),
         }
     }
 }
-
-
-
